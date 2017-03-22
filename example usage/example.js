@@ -1,5 +1,5 @@
 // example data
-var touhou =    [{id: 1, first_name: "Reimu", last_name: "Hakurei", age: 14},
+var touhou =	[{id: 1, first_name: "Reimu", last_name: "Hakurei", age: 14},
 				{id: 2, first_name: "Marisa", last_name: "Kirisame", age: 14},
 				{id: 3, first_name: "Rumia", last_name: "", age: ""},
 				{id: 4, first_name: "Daiyousei", last_name: "", age: ""},

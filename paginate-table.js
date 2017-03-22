@@ -1,18 +1,21 @@
 function paginateify(list, pgSize, divName, collumnNames, actions){
 	
-	// makes text safe and truncates
+	// prevent script injections and truncates long entries
 	function safe(text){
-		if(typeof(text) != "number"){
+		// default truncate length
+		var len = 50;
+		if(typeof(text) == "string"){
 			var text = $($.parseHTML(text)).text();
 			if(text.length > 30){
-				text = text.substring(0, 50) + "...";
+				text = text.substring(0, len) + "...";
 			}
 		}
 		return text;
 	}
 
-	// start making a table with the head
+	// makes a table
 	function makeTable(start){
+		//start making a table with the head
 		var table = `<table class="table"><tr>`;
 		for(var i=0; i<collumnNames.length; i++){
 			table += `<th>${collumnNames[i]}</th>`;
@@ -22,6 +25,7 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 		}
 		table += `</tr>`;
 
+		// fills out the body of the table
 		for(var i=start*pgSize; i<(start+1)*pgSize; i++){
 			if(list[i]){
 				table += `<tr>`;
@@ -31,6 +35,12 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 				if(actions){
 					table += `<td>`;
 					for(var k=0; k<actions.length; k++){
+						// add custom actions in here if desired
+						// example usage:
+						// if(actions[k] == "delete"){
+						// 		table += `<form action="/delete/${list[i]['id']} method="POST"> 
+						// 		<input class="btn btn-danger btn-xs" type="submit" value="delete"></form>`
+						// }
 						table += `<button class="btn btn-danger btn-xs">${actions[k]}</button> `;
 					}
 					table += `</td>`;
