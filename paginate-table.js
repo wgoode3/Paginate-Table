@@ -38,7 +38,7 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 						// add custom actions in here if desired
 						// example usage:
 						// if(actions[k] == "delete"){
-						// 		table += `<form action="/delete/${list[i]['id']} method="POST"> 
+						// 		table += `<form action="/delete/${list[i]['id']}" method="POST"> 
 						// 		<input class="btn btn-danger btn-xs" type="submit" value="delete"></form>`
 						// }
 						table += `<button class="btn btn-danger btn-xs">${actions[k]}</button> `;
