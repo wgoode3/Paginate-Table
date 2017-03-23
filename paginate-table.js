@@ -6,7 +6,7 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 		var len = 50;
 		if(typeof(text) == "string"){
 			var text = $($.parseHTML(text)).text();
-			if(text.length > 30){
+			if(text.length > len){
 				text = text.substring(0, len) + "...";
 			}
 		}
