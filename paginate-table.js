@@ -1,17 +1,21 @@
 function paginateify(list, pgSize, divName, collumnNames, actions){
 	
-	// this variables needed a larger scope
+	// these variables needed a larger scope
 	var numPages = Math.ceil(list.length / pgSize);
 	var current = 0;
 
+	// mostly used in the info that goes along with the pagination
+	var total = list.length;
+	
+	// default truncate length
+	var truncate_length = 50;
+
 	// prevent script injections and truncates long entries
 	function safe(text){
-		// default truncate length
-		var len = 50;
 		if(typeof(text) == "string"){
 			var text = $($.parseHTML(text)).text();
-			if(text.length > len){
-				text = text.substring(0, len) + "...";
+			if(text.length > truncate_length){
+				text = text.substring(0, truncate_length) + "...";
 			}
 		}
 		return text;
@@ -46,7 +50,7 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 
 	// makes a table
 	function makeTable(start){
-		//start making a table with the head
+		// start making a table with the head
 		var table = `<table class="table"><tr>`;
 		for(var i=0; i<collumnNames.length; i++){
 			table += `<th>${style(collumnNames[i])}</th>`;
@@ -91,68 +95,69 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 		$(`#${divName}`).html(table);
 	}
 	
-	makeTable(0);
+	makeTable(current);
 
-	// make pages
+	// gives me a results string that looks like...
+	// (showing results 21 through 41 of 277)
+	function resultString(){
+		var start = (current*pgSize)+1;
+		var end = (current+1)*pgSize;
+		if(end > total){
+			end = total;
+		}
+		return `<p class="results ${divName}">(Showing results ${start} through ${end} of ${total})</p>`
+	}
+
+	// makes pagination links
 	function makePages(current){
 		var pagination = `<ul class="pagination">
-							<li><a class="${divName}" id="first" href="">«</a></li>
-							<li><a class="${divName}" id="prev" href=""><</a></li>`;
+							<li><a class="${divName}" data-page="first" href=""><<</a></li>
+							<li><a class="${divName}" data-page="prev" href=""><</a></li>`;
 		for(var i=0; i<numPages; i++){
 			if(i == current){
-				pagination += `<li class="active"><a class="${divName}" id="page${i}" href="">${i+1}</a></li>`;
+				pagination += `<li class="active"><a class="${divName}" data-page="${i}" href="">${i+1}</a></li>`;
 			}else{
-				pagination += `<li><a class="${divName}" id="page${i}" href="">${i+1}</a></li>`;
+				pagination += `<li><a class="${divName}" data-page="${i}" href="">${i+1}</a></li>`;
 			}
 		}
-		pagination += `<li><a class="${divName}" id="next" href="">></a></li>
-						<li><a class="${divName}" id="last" href="">»</a></li></ul>`;
+		pagination += `<li><a class="${divName}" data-page="next" href="">></a></li>
+						<li><a class="${divName}" data-page="last" href="">>></a></li></ul>`;
+		pagination += resultString();
 		$(`#${divName}_pages`).html(pagination);
 	}
 	
 	makePages(current);
 
 	// listens for someone clicking a pagination link
-	$(`.${divName}`).click(function(a){
+	$(`a.${divName}`).click(function(a){
 		a.preventDefault();
-		if(this.id == "first"){
-			$(`a#page${current}.${divName}`).parent().removeClass("active");
+		$(`a.${divName}[data-page="${current}"]`).parent().removeClass("active");
+		if(this.dataset.page == "first"){
 			current = 0;
-			$(`a#page${current}.${divName}`).parent().addClass("active");
-			makeTable(0);
-		}else if(this.id == "prev"){
+		}else if(this.dataset.page == "prev"){
 			if(current > 0){
-				$(`a#page${current}.${divName}`).parent().removeClass("active");
 				current--;
-				$(`a#page${current}.${divName}`).parent().addClass("active");
-				makeTable(current);
 			}
-		}else if(this.id == "next"){
+		}else if(this.dataset.page == "next"){
 			if(current < numPages-1){
-				$(`a#page${current}.${divName}`).parent().removeClass("active");
 				current++;
-				$(`a#page${current}.${divName}`).parent().addClass("active");
-				makeTable(current);
 			}
-		}else if(this.id == "last"){
-			$(`a#page${current}.${divName}`).parent().removeClass("active");
+		}else if(this.dataset.page == "last"){
 			current = numPages-1;
-			$(`a#page${current}.${divName}`).parent().addClass("active");
-			makeTable(numPages-1);
 		}else{
-			$(`a#page${current}.${divName}`).parent().removeClass("active");
-			current = parseInt(this.id.substring(4))
-			$(`a#page${current}.${divName}`).parent().addClass("active");
-			makeTable(parseInt(this.id.substring(4)));
+			current = parseInt(this.dataset.page);
 		}
-	})
+		$(`a.${divName}[data-page="${current}"]`).parent().addClass("active");
+		$(`.results.${divName}`).html(resultString());
+		makeTable(current);
+	});
 }
 
 /*
 
 todo:
 
-1) restrict buttons to 5 on each side of active
+1) restrict buttons to 5? on each side of active
 
 	look like this (showing results 21 through 41 of 277)
  
