@@ -12,7 +12,7 @@ paginateify(users, 10, "users", ["id", "name", "email", "created_at"], ["edit", 
 // users: is any list of objects often the results from a query
 // 10: pageSize sets the default number of results per page
 // "users": corresponds to the id of the div that will be turned into a table
-// an array of collumn names: these need to correspond with keys in the list
+// an array of column names: these need to correspond with keys in the list
 // an array of actions: creates a button for each entry in the array
 ```
 In HTML

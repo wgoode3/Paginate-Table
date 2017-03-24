@@ -1,4 +1,4 @@
-function paginateify(list, pgSize, divName, collumnNames, actions){
+function paginateify(list, pgSize, divName, columnNames, actions){
 	
 	// these variables needed a larger scope
 	var numPages = Math.ceil(list.length / pgSize);
@@ -52,8 +52,8 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 	function makeTable(start){
 		// start making a table with the head
 		var table = `<table class="table"><tr>`;
-		for(var i=0; i<collumnNames.length; i++){
-			table += `<th>${style(collumnNames[i])}</th>`;
+		for(var i=0; i<columnNames.length; i++){
+			table += `<th>${style(columnNames[i])}</th>`;
 		}
 		if(actions){
 			table += `<th>Actions</th>`;
@@ -64,8 +64,8 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 		for(var i=start*pgSize; i<(start+1)*pgSize; i++){
 			if(list[i]){
 				table += `<tr>`;
-				for(var j=0; j<collumnNames.length; j++){
-					table += `<td>${safe(list[i][collumnNames[j]])}</td>`;	
+				for(var j=0; j<columnNames.length; j++){
+					table += `<td>${safe(list[i][columnNames[j]])}</td>`;	
 				}
 				if(actions){
 					table += `<td>`;
@@ -88,7 +88,17 @@ function paginateify(list, pgSize, divName, collumnNames, actions){
 				}
 				table += `</tr>`;
 			}else{
-				break;
+				// fills empty rows with non-breaking spaces
+				table += `<tr>`
+				if(actions){
+					var cols = columnNames.length + 1;
+				}else{
+					var cols = columnNames.length
+				}
+				for(var j=0; j<cols; j++){
+					table += `<td>&nbsp;</td>`;
+				}
+				table += `</tr>`
 			}
 		}
 		table += "</table>";
