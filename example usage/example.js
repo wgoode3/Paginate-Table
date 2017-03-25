@@ -8,8 +8,8 @@ var touhou =	[{id: 1, first_name: "Reimu", last_name: "Hakurei", age: 14},
 				{id: 7, first_name: "Koakuma", last_name: "", age: "???"},
 				{id: 8, first_name: "Patchoulli", last_name: "Knowledge", age: ""},	
 				{id: 9, first_name: "Sakuya", last_name: "Izayoi", age: ""},
-				{id: 10, first_name: "Remilia", last_name: "Knowledge", age: "500+"},
-				{id: 11, first_name: "Flandre", last_name: "Knowledge", age: 510},
+				{id: 10, first_name: "Remilia", last_name: "Scarlet", age: "500+"},
+				{id: 11, first_name: "Flandre", last_name: "Scarlet", age: 510},
 				{id: 12, first_name: "Letty", last_name: "Whiterock", age: ""},
 				{id: 13, first_name: "Chen", last_name: "", age: ""},
 				{id: 14, first_name: "Alice", last_name: "Margatroid", age: ""},
@@ -43,4 +43,4 @@ var touhou =	[{id: 1, first_name: "Reimu", last_name: "Hakurei", age: 14},
 				{id: 42, first_name: "Suwako", last_name: "Moriya", age: "2300+"}];
 
 // creates a table
-paginateify(touhou, 8, "touhou", ["id", "first_name", "last_name", "age"], ["Delete"]);
+paginateify(touhou, 4, "touhou", ["id", "first_name", "last_name", "age"], ["Delete"]);

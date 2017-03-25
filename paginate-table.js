@@ -10,6 +10,15 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 	// default truncate length
 	var truncate_length = 50;
 
+	// number of pagination links shown as a "radius"
+	var pgRadius = 4;
+
+	// max number of pages includes a current one in the middle
+	var numLinks = 2*pgRadius+1;
+	if(numLinks > numPages){
+		numLinks = numPages;
+	}
+
 	// prevent script injections and truncates long entries
 	function safe(text){
 		if(typeof(text) == "string"){
@@ -89,16 +98,16 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 				table += `</tr>`;
 			}else{
 				// fills empty rows with non-breaking spaces
-				table += `<tr>`
+				table += `<tr>`;
 				if(actions){
 					var cols = columnNames.length + 1;
 				}else{
-					var cols = columnNames.length
+					var cols = columnNames.length;
 				}
 				for(var j=0; j<cols; j++){
 					table += `<td>&nbsp;</td>`;
 				}
-				table += `</tr>`
+				table += `</tr>`;
 			}
 		}
 		table += "</table>";
@@ -115,7 +124,7 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 		if(end > total){
 			end = total;
 		}
-		return `<p class="results ${divName}">(Showing results ${start} through ${end} of ${total})</p>`
+		return `<p class="results ${divName}">(Showing results ${start} through ${end} of ${total})</p>`;
 	}
 
 	// makes pagination links
@@ -123,17 +132,43 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 		var pagination = `<ul class="pagination">
 							<li><a class="${divName}" data-page="first" href=""><<</a></li>
 							<li><a class="${divName}" data-page="prev" href=""><</a></li>`;
-		for(var i=0; i<numPages; i++){
+		for(var i=0; i<numLinks; i++){
 			if(i == current){
-				pagination += `<li class="active"><a class="${divName}" data-page="${i}" href="">${i+1}</a></li>`;
+				pagination += `<li class="active">`;
 			}else{
-				pagination += `<li><a class="${divName}" data-page="${i}" href="">${i+1}</a></li>`;
+				pagination += `<li>`;
 			}
+			pagination += `<a class="${divName}" data-page="${i}" href="">${i+1}</a></li>`;
 		}
 		pagination += `<li><a class="${divName}" data-page="next" href="">></a></li>
 						<li><a class="${divName}" data-page="last" href="">>></a></li></ul>`;
 		pagination += resultString();
 		$(`#${divName}_pages`).html(pagination);
+	}
+
+	// rewrite what the pagination links show
+	function redoPages(index, callback){
+		// I only need to reorder pages if we have more pages than we show
+		if(numLinks < numPages){
+			// then check if the index is near beginning, end, or in the middle
+			if(index < pgRadius + 1){
+				// make the pages starting at 0 ending at numLinks
+				var st = 0, ed = numLinks;
+			}else if(index > pgRadius && index < numPages - pgRadius){
+				// make the pages starting at index - pgRadius ending at index + pgRadius
+				var st = index - pgRadius, ed = index + pgRadius + 1;
+			}else if(index > numPages - pgRadius - 1){
+				// make the pages starting at numPages - numLinks ending at numPages
+				var st = numPages - numLinks, ed = numPages;
+			}
+			// neat that I need to track two indices at the same time
+			for(var i = st, j=2; i < ed; i++, j++){
+				// j starting at 2 skips the initial two pagination links
+				$(`#${divName}_pages ul li a:eq(${j})`).attr(`data-page`, `${i}`); // set data-page
+				$(`#${divName}_pages ul li a:eq(${j})`).text(`${i+1}`); // change text
+			}
+		}
+		callback();
 	}
 	
 	makePages(current);
@@ -144,20 +179,20 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 		$(`a.${divName}[data-page="${current}"]`).parent().removeClass("active");
 		if(this.dataset.page == "first"){
 			current = 0;
-		}else if(this.dataset.page == "prev"){
-			if(current > 0){
-				current--;
-			}
-		}else if(this.dataset.page == "next"){
-			if(current < numPages-1){
-				current++;
-			}
+		}else if(this.dataset.page == "prev" && current > 0){
+			current--;
+		}else if(this.dataset.page == "next" && current < numPages-1){
+			current++;
 		}else if(this.dataset.page == "last"){
 			current = numPages-1;
 		}else{
-			current = parseInt(this.dataset.page);
+			if(parseInt(this.dataset.page)){
+				current = parseInt(this.dataset.page);
+			}
 		}
-		$(`a.${divName}[data-page="${current}"]`).parent().addClass("active");
+		redoPages(current, function(){
+			$(`a.${divName}[data-page="${current}"]`).parent().addClass("active");
+		});
 		$(`.results.${divName}`).html(resultString());
 		makeTable(current);
 	});
@@ -167,17 +202,7 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 
 todo:
 
-1) restrict buttons to 5? on each side of active
-
-	look like this (showing results 21 through 41 of 277)
- 
- 	[1] [2] [3] [4] [5] [6] ... [>] [»]
-
-	and this (showing results 81 through 101 of 277)
-
-	[«] [<] [1] [2] [3] [4] [5] [6] [7] [8] [9] ... [>] [»]
-
-2) page size dropdown... choices of 10, 20, 30...
-3) searches
+1) page size dropdown... choices of 10, 20, 30...
+2) searches
 
 */
