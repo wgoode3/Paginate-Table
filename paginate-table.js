@@ -1,4 +1,4 @@
-function paginateify(list, pgSize, divName, columnNames, actions){
+function paginate(list, pgSize, divName, columnNames, actions){
 	
 	// these variables needed a larger scope
 	var numPages = Math.ceil(list.length / pgSize);
@@ -10,11 +10,11 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 	// default truncate length
 	var truncate_length = 50;
 
-	// number of pagination links shown as a "radius"
+	// number of pagination links shown on either side of "active", unless at ends
 	var pgRadius = 4;
 
 	// max number of pages includes a current one in the middle
-	var numLinks = 2*pgRadius+1;
+	var numLinks = 2 * pgRadius + 1;
 	if(numLinks > numPages){
 		numLinks = numPages;
 	}
@@ -162,10 +162,10 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 				var st = numPages - numLinks, ed = numPages;
 			}
 			// neat that I need to track two indices at the same time
-			for(var i = st, j=2; i < ed; i++, j++){
+			for(var i=st, j=2; i<ed; i++, j++){
 				// j starting at 2 skips the initial two pagination links
-				$(`#${divName}_pages ul li a:eq(${j})`).attr(`data-page`, `${i}`); // set data-page
-				$(`#${divName}_pages ul li a:eq(${j})`).text(`${i+1}`); // change text
+				$(`#${divName}_pages a:eq(${j})`).attr(`data-page`, `${i}`); // changes data-page
+				$(`#${divName}_pages a:eq(${j})`).text(`${i+1}`); // changes text
 			}
 		}
 		callback();
@@ -186,23 +186,15 @@ function paginateify(list, pgSize, divName, columnNames, actions){
 		}else if(this.dataset.page == "last"){
 			current = numPages-1;
 		}else{
-			if(parseInt(this.dataset.page)){
+			if(!isNaN(this.dataset.page)){
 				current = parseInt(this.dataset.page);
 			}
 		}
+		makeTable(current);
 		redoPages(current, function(){
+			// callback waits for links to be rewritten before adding class "active"
 			$(`a.${divName}[data-page="${current}"]`).parent().addClass("active");
 		});
 		$(`.results.${divName}`).html(resultString());
-		makeTable(current);
 	});
 }
-
-/*
-
-todo:
-
-1) page size dropdown... choices of 10, 20, 30...
-2) searches
-
-*/

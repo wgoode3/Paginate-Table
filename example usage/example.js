@@ -42,5 +42,5 @@ var touhou =	[{id: 1, first_name: "Reimu", last_name: "Hakurei", age: 14},
 				{id: 41, first_name: "Kanako", last_name: "Yasaka", age: "2000+"},
 				{id: 42, first_name: "Suwako", last_name: "Moriya", age: "2300+"}];
 
-// creates a table
-paginateify(touhou, 4, "touhou", ["id", "first_name", "last_name", "age"], ["Delete"]);
+// create a table
+paginate(touhou, 4, "touhou", ["id", "first_name", "last_name", "age"], ["Delete"]);
